@@ -5,6 +5,17 @@
 \usepackage{amsfonts, amsmath, amsthm, amssymb}
 \usepackage{listings}
 \usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+ 
+\urlstyle{same}
+
+
 \usepackage{color,soul}
 
 
@@ -70,10 +81,14 @@ Semantics of Probabilistic Programs\\
 Mark Goldstein
 \end{center}
 
+\section{Intro}
+
+\noindent A walkthrough of [1] and [2], mainly focusing on the presentation 
+in [2].
 
 \section{Measures}
 
-...
+\noindent ...
 
 \section{Kernels} 
 
@@ -108,6 +123,11 @@ $dy$ that we can land in when jumping from $x$.\\
 
 \section{Types and Semantics}
 
+\noindent The two papers [1,2] don't actually define the set of terms,
+but they are implied to be the typical ones in a language like Haskell.
+The 2018 POPL paper on semantics for higher-order languages [3] does formally
+introduce a kind and type system and a set of terms.
+
 $$ \b{A},\b{B} ::== 
     \b{R} | P(\b{A}) | 1 | \b{A} \times \b{B} | \sum_i \b{A}_{i \in I} $$
 
@@ -128,18 +148,19 @@ interpretation differently for deterministic and probabilistic terms. \\
 
 \noindent Deterministic terms 
 $\Gamma \vdash_d t : \b{A}$ are interpreted
-as measurable functions $[[t]]: [[\Gamma]] \rightarrow [[\b{A}]]$.
-
+as measurable functions $[[t]]: [[\Gamma]] \rightarrow [[\b{A}]]$,
+where $[[t]](\gamma) = x$ is an element of the underlying set
+$[[\b{A}]]$ rather than a measurable set in $\Sigma_{[[\b{A}]]}$.
 
 \begin{itemize}
-  \item $[[x]]_{\gamma, d, \gamma^\prime} = d$
-  \item $[[(i,t)]]_\gamma = (i,[[t]]_\gamma)$
+  \item $[[x]](\gamma::d::\gamma^\prime) = d$
+  \item $[[(i,t)]](\gamma) = (i,[[t]](\gamma))$
   \item $[[\texttt{case } t \texttt{ of } \{(i,x) 
-         \rightarrow u_i\}_{i \in I}]]_\gamma = 
-         [[u_i]]_{\gamma,d}$ if $[[t]]_\gamma = (i,d)$
-  \item $[[()]]_\gamma = ()$
-  \item $[[(t_0,t_1)]]_\gamma = ([[t_0]]_\gamma,[[t_1]]_\gamma)$
-  \item $[[\pi_j(t)]]_\gamma = d_j$ if $[[t]]_\gamma = (d_0,d_1)$
+         \rightarrow u_i\}_{i \in I}]](\gamma) = 
+         [[u_i]](\gamma,d)$ if $[[t]](\gamma) = (i,d)$
+  \item $[[()]](\gamma) = ()$
+  \item $[[(t_0,t_1)]](\gamma) = ([[t_0]](\gamma),[[t_1]](\gamma))$
+  \item $[[\pi_j(t)]](\gamma) = d_j$ if $[[t]](\gamma) = (d_0,d_1)$
 \end{itemize}
 
 \noindent where the $\texttt{case}$ expression above has a
@@ -154,7 +175,7 @@ as s-finite kernels $[[t]]: [[\Gamma]] \rightsquigarrow [[\b{A}]]$.
 
 \begin{itemize}
 
-\item \noindent \textbf{\texttt{return}(t)}\\
+\item \noindent \textbf{\texttt{return}(t)}
 
 \begin{center}
     \AxiomC{$\Gamma \vdash_d t : \b{A}$}
@@ -240,9 +261,9 @@ divide by. Consider $\Gamma \vdash_p t : \b{A}$ and
 let $\texttt{evidence}_t = [[t]]_{\gamma,[[\b{A}]]}$. Then:
 
 \[ 
-  [[\texttt{normalize}(t)]]_{\gamma} = 
+  [[\texttt{normalize}(t)]](\gamma) = 
     \left\{\begin{array}{lr}
-    (0,(\texttt{evidence}_t, \frac{[[t]]_{\gamma,(-)}}{\texttt{evidence}_t})), &
+    (0,(\texttt{evidence}_t, \frac{[[t]](\gamma,(-))}{\texttt{evidence}_t})), &
             \text{if } \texttt{evidence}_t \in (0,\infty)\\
     (1,()), & \text{if } \texttt{evidence}_t = 0\\
     (2,()), & \text{if } \texttt{evidence}_t = \infty
@@ -251,15 +272,30 @@ let $\texttt{evidence}_t = [[t]]_{\gamma,[[\b{A}]]}$. Then:
 
 \section{Example Programs}
 
-...
+\noindent ...
 
 \section{Commutativity}
 
-...
+\noindent ...
 
 \section{Higher Order}
 
-...
+\noindent ...
+
+\section{Citation}
+
+\begin{enumerate}
+  \item Staton et al. Semantics for probabilistic programming: higher-order
+        functions, continuous distributions, and soft constraints. LICS 2016.
+        \url{https://arxiv.org/pdf/1601.04943.pdf}
+
+  \item Staton. Commutative semantics for probabilistic programming. ESOP 2017.
+`        \url{http://www.cs.ox.ac.uk/people/samuel.staton/papers/esop2017.pdf}
+
+  \item Scibior et al. Denotational validation of Bayesian inference. POPL 2018.
+        \url{https://arxiv.org/pdf/1711.03219.pdf}
+
+\end{enumerate}
 
 % \infer{B}{A & (A \rightarrow B)}  
 
