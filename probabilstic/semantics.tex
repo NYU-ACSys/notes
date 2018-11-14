@@ -1,0 +1,270 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.0in]{geometry}
+\usepackage{url, enumitem}
+\usepackage{amsfonts, amsmath, amsthm, amssymb}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{color,soul}
+
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\theoremstyle{plain}
+\usepackage[textsize=tiny]{todonotes}
+
+
+\usepackage{proof}
+\usepackage{bussproofs}
+
+% Some useful macros.
+\newcommand{\given}{\,|\,}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\p}{\partial}
+\newcommand{\mba}{\mathbf{a}}
+\newcommand{\mbb}{\mathbf{b}}
+\newcommand{\mbx}{\mathbf{x}}
+\newcommand{\mcX}{\mathcal{X}}
+\newcommand{\mcY}{\mathcal{Y}}
+\newcommand{\boldw}{\mathbf{w}}
+\newcommand{\mbxt}{\tilde{\mathbf{x}}}
+\newcommand{\Sigmat}{\tilde{\Sigma}}
+\newcommand{\mbz}{\mathbf{z}}
+\newcommand{\mbw}{\mathbf{w}}
+\newcommand{\mcN}{\mathcal{N}}
+\newcommand{\mcP}{\mathcal{P}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\trans}{\intercal}
+\newcommand{\Ut}{\tilde{U}}
+\newcommand{\Beta}{\text{Beta}}
+\newcommand{\Bernoulli}{\text{Bernoulli}}
+\newcommand{\Elbo}{\text{ELBO}}
+\newcommand{\KL}{\text{KL}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\angstrom}{\textup{\AA}}
+\renewcommand{\v}[1]{\mathbf{#1}}
+\renewcommand{\b}[1]{\mathbb{#1}}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta
+    urlcolor=cyan,
+}
+\lstset{
+    basicstyle=\ttfamily,
+    mathescape
+}
+
+
+% Author: Mark Goldstein
+% Date: Summer 2018
+\begin{document}
+\begin{center}
+Semantics of Probabilistic Programs\\
+Mark Goldstein
+\end{center}
+
+
+\section{Measures}
+
+...
+
+\section{Kernels} 
+
+\noindent We need to briefly review kernels because
+they show up in the semantics. A kernel $k$ from $X$ to $Y$, notated
+$k: X \rightsquigarrow Y$, is a function $k: X \times \Sigma_Y \rightarrow [0,\infty]$
+such that
+
+\begin{itemize}
+    \item for fixed $x$, $k(x,-): \Sigma_Y \rightarrow [0,\infty]$ is a measure
+    \item for fixed $dy$, $k(-,dy): X \rightarrow [0,\infty]$ is a measurable function.
+\end{itemize}
+
+\noindent An intuitive example of kernels at work is conditional probability.
+Take $k(x,-)$ to be a probability measure on $\Sigma_Y$ given a particular value $X=x$:
+$\sum_{dy \in \Sigma_y} k(x,dy) = 1$. Note that $\sum_{x \in X} k(x,dy) \neq 1$ in general.\\
+
+\noindent Let $X,Y,Z$ be measurable spaces and let
+$k^1 : X \times Y \rightsquigarrow Z$ and 
+$k^2 : X \rightsquigarrow Y$ be s-finite kernels (\textbf{TODO}: explain s-finiteness). 
+Then we can define the composition $(k^1 \star k^2) : X \rightsquigarrow Z$ as
+
+$$ (k^1 \star k^2)(x,U) = \int_Y k^2(x,dy) k^1(x,y,U) $$
+
+\noindent For intuition, consider $k(x,-): \Sigma_Y \rightarrow [0,1]$
+to be the probability measure that tells you how likely it is to start
+off at location $x$ and end up in the interval $dy$. Then the composition
+$(k^1 \star k^2)(x,dz) = \int_Y k^2(x,dy) k^1(x,y,dz)$ can be taken to represent
+the probability of starting off at $x$ and ending up in the interval $dz$, where
+we take a step in-between to land on $y$, but average out across all intervals
+$dy$ that we can land in when jumping from $x$.\\
+
+\section{Types and Semantics}
+
+$$ \b{A},\b{B} ::== 
+    \b{R} | P(\b{A}) | 1 | \b{A} \times \b{B} | \sum_i \b{A}_{i \in I} $$
+
+\noindent where $I$ is countable and non-empty. Sum and product types. 
+Reals. Distributions over $\b{A}$. $(1+1)$ is the type of bools, 
+$P(1+1)$ is the type for distributions over bools, and $\sum_{i \in \b{N}} 1$ 
+is the type for natural numbers.\\
+
+\noindent \textbf{Typing judgements:} $\Gamma \vdash_d$ for deterministic
+judgements and $\Gamma \vdash_p$ for probabilistic judgements. Having the two
+typing judgements is mainly for notational clarity: it helps us to define 
+interpretation differently for deterministic and probabilistic terms. \\
+
+\noindent Types are interpreted as measurable spaces $[[\b{A}]]$. 
+
+
+\subsection{Typing Judgements and Interpretations for Deterministic Terms}
+
+\noindent Deterministic terms 
+$\Gamma \vdash_d t : \b{A}$ are interpreted
+as measurable functions $[[t]]: [[\Gamma]] \rightarrow [[\b{A}]]$.
+
+
+\begin{itemize}
+  \item $[[x]]_{\gamma, d, \gamma^\prime} = d$
+  \item $[[(i,t)]]_\gamma = (i,[[t]]_\gamma)$
+  \item $[[\texttt{case } t \texttt{ of } \{(i,x) 
+         \rightarrow u_i\}_{i \in I}]]_\gamma = 
+         [[u_i]]_{\gamma,d}$ if $[[t]]_\gamma = (i,d)$
+  \item $[[()]]_\gamma = ()$
+  \item $[[(t_0,t_1)]]_\gamma = ([[t_0]]_\gamma,[[t_1]]_\gamma)$
+  \item $[[\pi_j(t)]]_\gamma = d_j$ if $[[t]]_\gamma = (d_0,d_1)$
+\end{itemize}
+
+\noindent where the $\texttt{case}$ expression above has a
+deterministic continuation $u_i$. We will come back to the 
+probabilistic continuation case. Now the semantics for sequencing.
+
+
+\subsection{Typing Judgements and Interpretations for Probabilstic Terms}
+
+\noindent Probabilistic terms $\Gamma \vdash_p t : \b{A}$ are interpreted
+as s-finite kernels $[[t]]: [[\Gamma]] \rightsquigarrow [[\b{A}]]$.
+
+\begin{itemize}
+
+\item \noindent \textbf{\texttt{return}(t)}\\
+
+\begin{center}
+    \AxiomC{$\Gamma \vdash_d t : \b{A}$}
+    \RightLabel{\quad \quad \quad $[[\texttt{return}(t)]](\gamma,da) =
+      \delta_{[[t]](\gamma)}(da)$}
+    \UnaryInfC{$ \Gamma \vdash_p \texttt{return}(t): \b{A}$}
+    \DisplayProof
+\end{center}
+
+
+\noindent this corresponds to a Dirac Delta measure sitting at
+a point $[[t]]_\gamma$. \\
+
+\item \noindent \textbf{\texttt{let} x = t \texttt{ in } u}
+
+\begin{center}
+    \AxiomC{$\Gamma \vdash_p t : \b{A} \quad \Gamma,x:\b{A} \vdash_p u : \b{B}$}
+    \RightLabel{\quad \quad \quad 
+                $[[\texttt{let } x = t \texttt{ in } u]](\gamma,db) =
+          \displaystyle{\int}_{x,dx \in [[\b{A}]]} 
+                      [[u]] \Big( \gamma,x,db \Big) [[t]]\Big( \gamma,dx \Big)$}
+    \UnaryInfC{$\Gamma \vdash_p \texttt{let } x=t \texttt{ in } u : \b{B}$}
+    \DisplayProof
+\end{center}
+
+\noindent This one takes careful reading. Consider the kernel
+composition definition above. Take $k_1$ to be $[[u]]$ and take
+$k_2$ to be $[[t]]$. Then $(k^1 \star k^2)(\gamma, db) 
+= ([[u]] \star [[t])(\gamma, db)$\\
+
+\item \noindent \textbf{probabilstic \texttt{case}}
+
+\begin{center}
+  \AxiomC{$\Gamma \vdash_d t : \sum_{i \in I} \b{A}_i$}
+  \AxiomC{$(\Gamma,x:\b{A}_i \vdash_p u_i : \b{B})_{i \in I}$}
+  \BinaryInfC{$\Gamma \vdash_p (\texttt{case } t \texttt{ of }
+              \{(i,x) \rightarrow u_i \}_{i \in I}): \v{B}$} 
+  \DisplayProof
+\end{center}
+
+$$ [[\texttt{case } t \texttt{ of } \{(i,x) \rightarrow u_i \}_{i \in I} ]]
+    (\gamma,db) = [[u_i]](\gamma::d,db) \texttt { if } [[t]](\gamma) =(i,d)$$
+
+\item \noindent \textbf{\texttt{sample}(t)}
+
+\begin{center}
+    \AxiomC{$\Gamma \vdash_d t : P(\b{A})$}
+    \RightLabel{\quad \quad \quad 
+      $[[\texttt{sample}(t)]](\gamma,da) = 
+      \Big([[t]](\gamma)\Big)(da)$}
+    \UnaryInfC{$ \Gamma \vdash_p \texttt{sample}(t): \b{A}$}
+    \DisplayProof
+\end{center} 
+
+\item \noindent \textbf{\texttt{score}(t)}
+
+\begin{center}
+    \AxiomC{$ \Gamma \vdash_d t : \b{R}$}
+    \UnaryInfC{$\Gamma \vdash_p \texttt{score}(t): 1$}
+    \DisplayProof
+\end{center}
+
+\[ 
+  [[\texttt{score}(t)]](\gamma,du) = 
+    \left\{\begin{array}{lr}
+     abs \Big( [[t]](\gamma) \Big), & \text{if } du=\{()\}\\
+     0, & \text{if } du=\emptyset 
+    \end{array}\right\}
+\]
+
+\end{itemize}
+
+\subsection{Typing Judgements and Interpretation for Normalize}
+
+\begin{center}
+    \AxiomC{$\Gamma \vdash_p t : \b{A}$}
+    \UnaryInfC{$\Gamma \vdash_d \texttt{normalize}(t): \b{R} \times P(\b{A}) + 1 + 1$}
+    \DisplayProof
+\end{center}
+
+\noindent To give it a semantics, we must find the normalizing constant to 
+divide by. Consider $\Gamma \vdash_p t : \b{A}$ and 
+let $\texttt{evidence}_t = [[t]]_{\gamma,[[\b{A}]]}$. Then:
+
+\[ 
+  [[\texttt{normalize}(t)]]_{\gamma} = 
+    \left\{\begin{array}{lr}
+    (0,(\texttt{evidence}_t, \frac{[[t]]_{\gamma,(-)}}{\texttt{evidence}_t})), &
+            \text{if } \texttt{evidence}_t \in (0,\infty)\\
+    (1,()), & \text{if } \texttt{evidence}_t = 0\\
+    (2,()), & \text{if } \texttt{evidence}_t = \infty
+    \end{array}\right\}
+\]
+
+\section{Example Programs}
+
+...
+
+\section{Commutativity}
+
+...
+
+\section{Higher Order}
+
+...
+
+% \infer{B}{A & (A \rightarrow B)}  
+
+
+\end{document}
+
+
+
