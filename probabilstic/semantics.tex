@@ -144,17 +144,17 @@ $dy$ that we can land in when jumping from $x$.\\
 \noindent The two papers [1,2] don't actually define the set of terms,
 but they are implied to be the typical ones in a language like Haskell.
 The 2018 POPL paper on semantics for higher-order languages [3] does formally
-introduce a kind and type system and a set of terms.
+introduce a kind and type system and a set of terms. We define our types as:
 
-$$ \b{A},\b{B} ::== 
+$$ \b{A},\b{B} ::= 
     \b{R} | P(\b{A}) | 1 | \b{A} \times \b{B} | \sum_i \b{A}_{i \in I} $$
 
 \noindent where $I$ is countable and non-empty. As we will see, 
-types are interpreted as measurable spaces $[[\b{A}]]$. We have sum and product types.
-We have a type that denotes the Reals. We have a type that denotes 
-the set of probability measures over a space denoted by $\b{A}$. 
-We have the type $1$ the denotes a singleton set. For bools, we can just take
-$(1+1)$ and $P(1+1)$ is the type for distributions over bools.
+types are to be interpreted as measurable spaces $[[\b{A}]]$. 
+We have sum and product types. We have a type $\b{R}$ that denotes the Reals $[[\b{R}]]$. 
+We have a type $P(\b{A})$ that denotes the set of probability measures $[[P(\b{A})]]$
+over a space denoted by $\b{A}$. We have the type $1$ the denotes a singleton set. 
+For bools, we can just take $(1+1)$ and $P(1+1)$ is the type for distributions over bools.
 For the natural numbers, we can use $\sum_{i \in \b{N}} 1$. \\
 
 \noindent \textbf{Typing judgements:} $\Gamma \vdash_d$ for deterministic
@@ -165,27 +165,80 @@ interpretation differently for deterministic and probabilistic terms. \\
 
 \subsection{Typing Judgements and Interpretations for Deterministic Terms}
 
-\noindent Deterministic terms 
-$\Gamma \vdash_d t : \b{A}$ are interpreted
+\noindent Deterministic terms  $\Gamma \vdash_d t : \b{A}$ are interpreted
 as measurable functions $[[t]]: [[\Gamma]] \rightarrow [[\b{A}]]$,
 where $[[t]](\gamma) = x$ is an element of the underlying set
-$[[\b{A}]]$ rather than a measurable set in $\Sigma_{[[\b{A}]]}$.
+$[[\b{A}]]$ and not a measurable set in $\Sigma_{[[\b{A}]]}$.
+\textbf{Note:} the following informally uses the notation 
+$\Gamma::(x:\b{A})::\Gamma^\prime$ to show a particular variable $x$
+of type $\b{A}$ in the environment.
 
 \begin{itemize}
-  \item $[[x]](\gamma::d::\gamma^\prime) = d$
-  \item $[[(i,t)]](\gamma) = (i,[[t]](\gamma))$
-  \item $[[\texttt{case } t \texttt{ of } \{(i,x) 
-         \rightarrow u_i\}_{i \in I}]](\gamma) = 
-         [[u_i]](\gamma,d)$ if $[[t]](\gamma) = (i,d)$
-  \item $[[()]](\gamma) = ()$
-  \item $[[(t_0,t_1)]](\gamma) = ([[t_0]](\gamma),[[t_1]](\gamma))$
-  \item $[[\pi_j(t)]](\gamma) = d_j$ if $[[t]](\gamma) = (d_0,d_1)$
+
+
+    \item \textbf{basic term} $x:\b{A}$
+        
+         \begin{center}
+            \AxiomC{}
+            \RightLabel{\quad \quad \quad $[[x]](\gamma::d::\gamma^\prime) = d$}
+            \UnaryInfC{$\Gamma::(x:A)::\Gamma^\prime \vdash_d x: \b{A}$}
+            \DisplayProof
+         \end{center}
+
+    \item \textbf{Disjoint Sum Type}
+
+        \begin{center}
+            \AxiomC{$\Gamma \vdash_d t: \b{A}_i$}
+            \RightLabel{\quad \quad \quad $[[(i,t)]](\gamma) = (i,[[t]](\gamma))$}
+            \UnaryInfC{$\Gamma \vdash_d (i,t): \sum_{i \in I} \b{A}_i$}
+            \DisplayProof
+        \end{center}
+
+    \item \textbf{Deterministic \texttt{case}}
+
+        \begin{center}
+            \AxiomC{$\Gamma \vdash_d t : \sum_{i \in I} \b{A}_i$}
+            \AxiomC{$(\Gamma::(x:\b{A}_i) \vdash_d u_i : \b{B})_{i \in I}$}
+            \BinaryInfC{$\Gamma \vdash_d (\texttt{case } t \texttt{ of }
+                \{(i,x) \rightarrow u_i \}_{i \in I}): \v{B}$} 
+            \DisplayProof
+        \end{center}
+        $$[[\texttt{case } t \texttt{ of } \{(i,x) 
+            \rightarrow u_i\}_{i \in I}]](\gamma) = 
+            [[u_i]](\gamma,d) \texttt{ if } [[t]](\gamma) = (i,d)$$
+
+    \item \textbf{Unit ()}
+
+        \begin{center}
+            \AxiomC{}
+            \RightLabel{\quad \quad \quad $[[()]](\gamma) = ()$}
+            \UnaryInfC{$\Gamma \vdash_d (): 1$}
+            \DisplayProof
+        \end{center}
+  
+    \item \textbf{Product Type}
+        \begin{center}
+            \AxiomC{$\Gamma \vdash_d t_0:\b{A}_0$}
+            \AxiomC{$\Gamma \vdash_d t_1:\b{A}_1$}
+            \RightLabel{\quad \quad \quad 
+                $[[(t_0,t_1)]](\gamma) = ([[t_0]](\gamma),[[t_1]](\gamma))$}
+            \BinaryInfC{$\Gamma \vdash_d (t_0,t_1): \b{A}_0 \times \b{A}_1$}
+            \DisplayProof
+        \end{center}
+    
+    \item \textbf{Projection}
+        \begin{center}
+            \AxiomC{$\Gamma \vdash_d t: \b{A}_0 \times \b{A}_1$}
+            \RightLabel{\quad \quad \quad 
+                $[[\pi_j(t)]](\gamma) = d_j$ if $[[t]](\gamma) = (d_0,d_1)$}
+            \UnaryInfC{$\Gamma \vdash_d \pi_j(t):\b{A}_j$}
+            \DisplayProof
+        \end{center}
 \end{itemize}
 
 \noindent where the $\texttt{case}$ expression above has a
 deterministic continuation $u_i$. We will come back to the 
 probabilistic continuation case. Now the semantics for sequencing.
-
 
 \subsection{Typing Judgements and Interpretations for Probabilistic Terms}
 
