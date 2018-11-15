@@ -276,7 +276,7 @@ a point $[[t]]_\gamma$. \\
 \noindent This one takes careful reading. Consider the kernel
 composition definition above. Take $k_1$ to be $[[u]]$ and take
 $k_2$ to be $[[t]]$. Then $(k^1 \star k^2)(\gamma, db) 
-= ([[u]] \star [[t])(\gamma, db)$\\
+= ([[u]] \star [[t]])(\gamma, db)$\\
 
 \item \noindent \textbf{probabilistic \texttt{case}}
 
@@ -284,7 +284,7 @@ $k_2$ to be $[[t]]$. Then $(k^1 \star k^2)(\gamma, db)
   \AxiomC{$\Gamma \vdash_d t : \sum_{i \in I} \b{A}_i$}
   \AxiomC{$(\Gamma,x:\b{A}_i \vdash_p u_i : \b{B})_{i \in I}$}
   \BinaryInfC{$\Gamma \vdash_p (\texttt{case } t \texttt{ of }
-              \{(i,x) \rightarrow u_i \}_{i \in I}): \v{B}$} 
+              \{(i,x) \rightarrow u_i \}_{i \in I}): \b{B}$} 
   \DisplayProof
 \end{center}
 
@@ -344,11 +344,38 @@ let $\texttt{evidence}_t = [[t]]_{\gamma,[[\b{A}]]}$. Then:
 
 \section{Example Programs}
 
-\noindent ...
+\noindent Definition of Density: if $f(x)=\frac{1}{\sqrt{2 \pi}} e^{-\frac{1}{2}x^2}$,
+then:
+\begin{align*}
+    &[[ \vdash_p \texttt{let } x = \texttt{ sample}(gauss(0,1)) \texttt{ in score}
+        (1/f(x));\texttt{ return}(x): \b{R}]](U)\\
+    &=\\
+    &lebesgue(U)
+\end{align*}
 
-\section{Commutativity}
+\noindent For probability measure $p$ with density $g$, recover the importance
+sampling algorithm for sampling from $p$ by sampling from a Gaussian by showing:
+\begin{align*}
+    [[\texttt{sample}(p)]] &= [[\texttt{let } x = lebesgue
+           \texttt{ in score}(p(x)); \texttt {return}(x) ]]\\
+                    &= [[\texttt{let } x = gauss(0,1) \texttt{ in score}
+                (1/f(x)); \texttt{score}(g(x));\texttt{return}(x)]]\\
+                &= [[\texttt{let } x = gauss(0,1) \texttt{ in score}
+                (g(x)/f(x); \texttt{return}(x)]]
+\end{align*}
 
-\noindent ...
+\noindent Conjugate Prior: If you place a prior of $beta(2,2)$ on the parameter $x$
+of a Bernoulli likelihood distribution for binary data, and you see the data point
+$1$, then the posterior distribution of $x$ is $beta(3,2)$
+
+\begin{align*}
+    &[[ \texttt{let } x = \texttt{sample}(beta(2,2)) \texttt { in score}
+        (bern(1;x)) ; x    
+    \texttt{ in observe } 1
+      \texttt{ from } bern(x);x]]\\
+    &=\\
+    &[[ \texttt{observe } 1 \texttt{ from } bern(2/(2+2));\texttt{sample}(beta(2+1,2))]]
+\end{align*}
 
 \section{Higher Order}
 
