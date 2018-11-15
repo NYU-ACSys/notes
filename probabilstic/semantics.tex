@@ -370,10 +370,8 @@ $1$, then the posterior distribution of $x$ is $beta(3,2)$
 
 \begin{align*}
     &[[ \texttt{let } x = \texttt{sample}(beta(2,2)) \texttt { in score}
-        (bern(1;x)) ; x    
-    \texttt{ in observe } 1
-      \texttt{ from } bern(x);x]]\\
-    &=\\
+        (bern(1;x)) ; x]]
+    &&=\\
     &[[ \texttt{observe } 1 \texttt{ from } bern(2/(2+2));\texttt{sample}(beta(2+1,2))]]
 \end{align*}
 
