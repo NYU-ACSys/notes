@@ -332,25 +332,29 @@ $$ [[\texttt{case } t \texttt{ of } \{(i,x) \rightarrow u_i \}_{i \in I} ]]
 
 \subsection{Typing Judgements and Interpretation for Normalize}
 
-\begin{center}
-    \AxiomC{$\Gamma \vdash_p t : \b{A}$}
-    \UnaryInfC{$\Gamma \vdash_d \texttt{normalize}(t): \b{R} \times P(\b{A}) + 1 + 1$}
-    \DisplayProof
-\end{center}
+\noindent \textbf{TODO}
 
-\noindent To give it a semantics, we must find the normalizing constant to 
-divide by. Consider $\Gamma \vdash_p t : \b{A}$ and 
-let $\texttt{evidence}_t = [[t]]_{\gamma,[[\b{A}]]}$. Then:
+%\begin{center}
+%    \AxiomC{$\Gamma \vdash_p t : \b{A}$}
+%    \UnaryInfC{$\Gamma \vdash_d \texttt{normalize}(t): \b{R} \times P(\b{A}) + 1 + 1$}
+%    \DisplayProof
+%\end{center}
+%
+%\noindent To give it a semantics, we must find the normalizing constant to 
+%divide by. Consider $\Gamma \vdash_p t : \b{A}$ and 
+%let $\texttt{evidence}_t = [[t]]_{\gamma,[[\b{A}]]}$. Then:
+%
+%\[ 
+%  [[\texttt{normalize}(t)]](\gamma) = 
+%    \left\{\begin{array}{lr}
+%    (0,(\texttt{evidence}_t, \frac{[[t]](\gamma,(-))}{\texttt{evidence}_t})), &
+%            \text{if } \texttt{evidence}_t \in (0,\infty)\\
+%    (1,()), & \text{if } \texttt{evidence}_t = 0\\
+%    (2,()), & \text{if } \texttt{evidence}_t = \infty
+%    \end{array}\right\}
+%\]
 
-\[ 
-  [[\texttt{normalize}(t)]](\gamma) = 
-    \left\{\begin{array}{lr}
-    (0,(\texttt{evidence}_t, \frac{[[t]](\gamma,(-))}{\texttt{evidence}_t})), &
-            \text{if } \texttt{evidence}_t \in (0,\infty)\\
-    (1,()), & \text{if } \texttt{evidence}_t = 0\\
-    (2,()), & \text{if } \texttt{evidence}_t = \infty
-    \end{array}\right\}
-\]
+\newpage
 
 \section{Example Programs}
 
