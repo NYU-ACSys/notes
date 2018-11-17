@@ -382,7 +382,7 @@ $$ [[\texttt{case } t \texttt{ of } \{(i,x) \rightarrow u_i \}_{i \in I} ]]
         \quad \texttt{Beta}(dx;2,2)\\
     &= \texttt{UnnormalizedPosterior}(db) = \int_{x \in db} 
         \texttt{Bernoulli}(1;x) \quad \texttt{Beta}(dx;2,2)\\
-    &= \int_{x \in db} \Big(x^{\alpha + 1 - 1}(1-x)^{\beta - 1}\Big)
+        &= \int_{x \in db} \Big(x^{2 + 1 - 1}(1-x)^{2 - 1}\Big)
     \end{align*}
 
 \noindent This gives the expected result. We were able to interpret the program as an un-normalized posterior for a Beta-Bernoulli model.\\
