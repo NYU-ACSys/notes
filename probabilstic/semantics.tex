@@ -83,9 +83,27 @@ Mark Goldstein
 
 \section{Intro}
 
-\noindent A walkthrough of [1] and [2], mainly focusing on the presentation 
-in [2]. We first briefly review measures and kernels because
-they show up in the semantics.
+\noindent This document is concerned with the formal semantics of probabilistic programs used
+for probabilstic modeling and machine learning. One approach in this setting is that 
+\begin{itemize}
+    \item we want programs in our language to specify probabilistic generative models of data, and 
+    \item we want these programs to be interpreted as (un-normalized) posterior distributions over
+          variables of interest in the model (latents and model parameters)
+\end{itemize}
+\noindent That is, we want our compilers/interpreters to do probabilstic inference. 
+Once one specifies a programming language, including its terms, types, and syntax, one
+must specify how to interpret what a program means: in our case we must
+specify how a generative model maps to a posterior distribution.
+We will focus on denotational semantics, which associate a mathematical object with each
+fragment of program code in a compositional way. As such, each piece of our program
+will describe a distribution and the whole program will too.\\
+
+\noindent We present a walkthrough of \textit{Semantics for probabilistic programming: 
+higher-order functions, continuous distributions, and soft constraints} [1, 2016]
+and \textit{Commutative semantics for probabilistic programming} [2, 2017], 
+mainly focusing on the presentation in [2]. We first briefly review measures and kernels because
+they show up in the semantics. We will later be interested in approximate inference but focus
+on the exact case here.
 
 \section{Measure Theory}
 
@@ -140,10 +158,10 @@ $\sum_{dy \in \Sigma_y} k(x,dy) = 1$. Note that $\sum_{x \in X} k(x,dy) \neq 1$ 
 
 \section{Types and Semantics}
 
-\noindent The two papers [1,2] don't actually define the set of terms,
-but they are implied to be the typical ones in a language like Haskell.
-The 2018 POPL paper on semantics for higher-order languages [3] does formally
-introduce a kind and type system and a set of terms. We define our types as:
+\noindent The two papers [1,2] don't actually define the set of terms of the language,
+but they are implied to be the typical ones in a language like Haskell. They just define
+a set of types and typing rules. The 2018 POPL paper on semantics for higher-order languages [3] 
+does formally introduce a kind and type system and a set of terms. We define our types as:
 
 $$ \b{A},\b{B} ::= 
     \b{R} | P(\b{A}) | 1 | \b{A} \times \b{B} | \sum_i \b{A}_{i \in I} $$
@@ -154,7 +172,9 @@ We have sum and product types. We have a type $\b{R}$ that denotes the Reals $[[
 We have a type $P(\b{A})$ that denotes the set of probability measures $[[P(\b{A})]]$
 over a space denoted by $\b{A}$. We have the type $1$ the denotes a singleton set. 
 For bools, we can just take $(1+1)$ and $P(1+1)$ is the type for distributions over bools.
-For the natural numbers, we can use $\sum_{i \in \b{N}} 1$. \\
+For the natural numbers, we can use $\sum_{i \in \b{N}} 1$. Our terms are therefore
+elements of these sets, like elements of a $\sigma$-algebra whose probability
+we are interested in and density functions. \\
 
 \noindent \textbf{Typing judgements:} $\Gamma \vdash_d$ for deterministic
 judgements and $\Gamma \vdash_p$ for probabilistic judgements. Having the two
@@ -199,7 +219,7 @@ of type $\b{A}$ in the environment.
             \AxiomC{$\Gamma \vdash_d t : \sum_{i \in I} \b{A}_i$}
             \AxiomC{$(\Gamma::(x:\b{A}_i) \vdash_d u_i : \b{B})_{i \in I}$}
             \BinaryInfC{$\Gamma \vdash_d (\texttt{case } t \texttt{ of }
-                \{(i,x) \rightarrow u_i \}_{i \in I}): \v{B}$} 
+                \{(i,x) \rightarrow u_i \}_{i \in I}): \b{B}$} 
             \DisplayProof
         \end{center}
         $$[[\texttt{case } t \texttt{ of } \{(i,x) 
