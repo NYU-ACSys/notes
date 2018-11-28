@@ -84,13 +84,13 @@ Mark Goldstein
 \section{Intro}
 
 \noindent This document is concerned with the formal semantics of probabilistic programs used
-for probabilstic modeling and machine learning. One approach in this setting is that 
+for probabilistic modeling and machine learning. One approach in this setting is that 
 \begin{itemize}
     \item we want programs in our language to specify probabilistic generative models of data, and 
-    \item we want these programs to be interpreted as (un-normalized) posterior distributions over
+    \item we want these programs to be interpreted as (exact for now) posterior distributions over
           variables of interest in the model (latents and model parameters)
 \end{itemize}
-\noindent That is, we want our compilers/interpreters to do probabilstic inference. 
+\noindent That is, we want our compilers/interpreters to do probabilistic inference. 
 Once one specifies a programming language, including its terms, types, and syntax, one
 must specify what a program means: in our case, how a generative model maps to a posterior distribution.
 We will focus on denotational semantics, which associate programs with a mathematical object from some suitable category.
@@ -161,8 +161,9 @@ $\sum_{dy \in \Sigma_y} k(x,dy) = 1$. Note that $\sum_{x \in X} k(x,dy) \neq 1$ 
 
 \noindent The two papers [1,2] don't actually define the set of terms of the language,
 but they are implied to be the typical ones in a language like Haskell. They just define
-some types and typing rules. The 2018 POPL paper on semantics for higher-order languages [3] 
-does formally introduce a kind and type system and a set of terms. We define our types as:
+some types and typing rules. The 2018 POPL paper on approximate-inference semantics for 
+higher-order languages [3] does formally introduce a kind and type system and a set of terms. 
+We define our types as:
 
 $$ \b{A},\b{B} ::= 
     \b{R} | P(\b{A}) | 1 | \b{A} \times \b{B} | \sum_i \b{A}_{i \in I} $$
