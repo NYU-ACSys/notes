@@ -77,7 +77,7 @@
 % Date: Summer 2018
 \begin{document}
 \begin{center}
-Semantics of Probabilistic Programs\\
+Exact Semantics of Probabilistic Programs\\
 Mark Goldstein
 \end{center}
 
@@ -92,18 +92,19 @@ for probabilstic modeling and machine learning. One approach in this setting is 
 \end{itemize}
 \noindent That is, we want our compilers/interpreters to do probabilstic inference. 
 Once one specifies a programming language, including its terms, types, and syntax, one
-must specify how to interpret what a program means: in our case we must
-specify how a generative model maps to a posterior distribution.
-We will focus on denotational semantics, which associate a mathematical object with each
-fragment of program code in a compositional way. As such, each piece of our program
+must specify what a program means: in our case, how a generative model maps to a posterior distribution.
+We will focus on denotational semantics, which associate programs with a mathematical object from some suitable category.
+Denotational semantics are compositional so that, in our case, each piece of our program
 will describe a distribution and the whole program will too.\\
 
 \noindent We present a walkthrough of \textit{Semantics for probabilistic programming: 
 higher-order functions, continuous distributions, and soft constraints} [1, 2016]
 and \textit{Commutative semantics for probabilistic programming} [2, 2017], 
 mainly focusing on the presentation in [2]. We first briefly review measures and kernels because
-they show up in the semantics. We will later be interested in approximate inference but focus
-on the exact case here.
+they show up in the semantics. We will later be interested in higher-order functions and approximate inference 
+but focus on first-order programs and exact inference here. Later, we will also be interested in properties of 
+probabilistic programs (commutativity corresponding to Fubini's theorem, generalized versions of de Finetti's 
+exchangability theorem, and more).
 
 \section{Measure Theory}
 
@@ -160,7 +161,7 @@ $\sum_{dy \in \Sigma_y} k(x,dy) = 1$. Note that $\sum_{x \in X} k(x,dy) \neq 1$ 
 
 \noindent The two papers [1,2] don't actually define the set of terms of the language,
 but they are implied to be the typical ones in a language like Haskell. They just define
-a set of types and typing rules. The 2018 POPL paper on semantics for higher-order languages [3] 
+some types and typing rules. The 2018 POPL paper on semantics for higher-order languages [3] 
 does formally introduce a kind and type system and a set of terms. We define our types as:
 
 $$ \b{A},\b{B} ::= 
@@ -176,11 +177,29 @@ For the natural numbers, we can use $\sum_{i \in \b{N}} 1$. Our terms are theref
 elements of these sets, like elements of a $\sigma$-algebra whose probability
 we are interested in and density functions. \\
 
-\noindent \textbf{Typing judgements:} $\Gamma \vdash_d$ for deterministic
-judgements and $\Gamma \vdash_p$ for probabilistic judgements. Having the two
+\subsection{Notation}
+\noindent For those not familiar, the below typing rules of the form
+         \begin{center}
+            \AxiomC{$\Gamma \vdash_d t: \b{A}$}
+            \RightLabel{}
+            \UnaryInfC{$\Gamma \vdash_d f(t): \b{B}$}
+            \DisplayProof
+         \end{center}
+\noindent can be read as ``under the premise that the term $t$ is of type $\b{A}$ in the context of environment $\Gamma$,
+we can conclude that $f(t)$ is of type $\b{B}$ in context $\Gamma$. To the right of the typing judgements below, we show 
+the intended interpretations. $[[x]]$ is the object denoted by $x$, or ``the interpretation of $x$". As will be explained in the next
+section, these semantics interpret most terms as some kind of function. When we show an interpretation for a term $t$, $[[t]]$ is defined 
+by how it acts on its arguments, i.e. $[[t]](x)=y$\\
+
+\noindent \textbf{Two Typing judgements:} $\Gamma \vdash_d$ is used for deterministic
+judgements and $\Gamma \vdash_p$ is used for probabilistic judgements. Having the two
 typing judgements is mainly for notational clarity: it helps us to define 
 interpretation differently for deterministic and probabilistic terms. \\
 
+\noindent \textbf{Environments as lists:} the following informally uses the notation 
+$\Gamma::(x:\b{A})::\Gamma^\prime$ to show a particular variable $x$
+of type $\b{A}$ in the environment and $\Gamma::(x:\b{A})$ to show
+that we have extended the environment with $x$ (like in a \texttt{let} expression).
 
 \subsection{Typing Judgements and Interpretations for Deterministic Terms}
 
@@ -188,9 +207,7 @@ interpretation differently for deterministic and probabilistic terms. \\
 as measurable functions $[[t]]: [[\Gamma]] \rightarrow [[\b{A}]]$,
 where $[[t]](\gamma) = x$ is an element of the underlying set
 $[[\b{A}]]$ and not a measurable set in $\Sigma_{[[\b{A}]]}$.
-\textbf{Note:} the following informally uses the notation 
-$\Gamma::(x:\b{A})::\Gamma^\prime$ to show a particular variable $x$
-of type $\b{A}$ in the environment.
+
 
 \begin{itemize}
 
@@ -405,7 +422,8 @@ $$ [[\texttt{case } t \texttt{ of } \{(i,x) \rightarrow u_i \}_{i \in I} ]]
         &= \int_{x \in db} \Big(x^{2 + 1 - 1}(1-x)^{2 - 1}\Big)
     \end{align*}
 
-\noindent This gives the expected result. We were able to interpret the program as an un-normalized posterior for a Beta-Bernoulli model.\\
+\noindent This gives the expected result. We were able to interpret the program as an un-normalized posterior for a Beta-Bernoulli model.
+We could also have applied \texttt{Normalize} to get the exact normalized posterior.\\
 
 \noindent Note on conjugacy: In this example, we consider a Beta-Bernoulli model. 
 The Beta distribution is a continuous distribution over $[0,1]$ whose shape is determined by two parameters $\alpha$ and $\beta$ so that the density is 
