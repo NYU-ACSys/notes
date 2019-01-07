@@ -335,6 +335,10 @@ $$ \nabla f = \Big( \frac{\partial y}{\partial x_1},...,\frac{\partial y}{\parti
 
 \noindent( a $1 \times n$ Jacobian built one column at a time with $n$ forward evaluations )
 
+\newpage
+
+\subsection{Implementation of Forward Mode with Dual Numbers}
+
 \noindent Dual numbers are used in forward mode AD. The Dual Number addition
 and multiplication rules mirror differentiation rules:
 \begin{align*}
@@ -365,6 +369,8 @@ In practice, a function $f$ coded in a programming language would be fed
 into an AD tool and augmented with extra code (or interpreted) to handle
 dual operations so the function and its derivative are simultaneously computed.
 Note that these tools require source code transformation or operator overloading.
+
+\newpage
 
 \subsection{Reverse Mode AD}
 
