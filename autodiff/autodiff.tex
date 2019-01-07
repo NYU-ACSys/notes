@@ -174,7 +174,7 @@ compositions of a finite set of elementary operations for which derivatives are 
 These are combined through the chain rule to give derivatives of the compositions.
 These elementary operations include binary arithmetic operations, negation,
 and transcendental functions such as the exponential, logarithm, and trigonometric functions.
-In fact, differentiation is not computable [Pour-El and Ricahrds, 1978, 1983] for
+In fact, differentiation is not computable [Pour-El and Richards, 1978, 1983] for
 arbitrary functions, must use compositions.
 
 \item Makes use of "evaluation traces": bookkeeping includes working variables that are assigned
@@ -248,7 +248,7 @@ here, following [Mathoma 2016] and [Berland 2006]\\
 \end{itemize}
 
 \noindent In both of the above: think about an imaginary unit, 
-have it be equal to some number upon squarring, see what multiplication looks like.
+have it be equal to some number upon squaring, see what multiplication looks like.
 How about $\epsilon$ such that $\epsilon^2=0$? Dual Numbers $\b{D}$: 
 \begin{itemize}
     \item numbers of form $a + b \epsilon$ where $\epsilon^2 = 0$
@@ -296,7 +296,7 @@ to $x_i$.
 
 Consider again $f(x_1,x_2) = \ln(x_1) + x_1x_2 - \sin(x_2)$ whose evaluation trace is 
 given above. For computing the derivative of $f$ with respect to $x_1$, we 
-start by associating with each intermediate vaiable $v_i$ a derivative
+start by associating with each intermediate variable $v_i$ a derivative
 
 $$ \dot{v_i} = \frac{\partial v_i}{\partial x_1} $$.
 
@@ -333,7 +333,7 @@ to get the gradient vector
 
 $$ \nabla f = \Big( \frac{\partial y}{\partial x_1},...,\frac{\partial y}{\partial x_n} \Big )$$
 
-\noindent( a $1 \times n$ Jacoban built one column at a time with $n$ forward evaluations )
+\noindent( a $1 \times n$ Jacobian built one column at a time with $n$ forward evaluations )
 
 \noindent Dual numbers are used in forward mode AD. The Dual Number addition
 and multiplication rules mirror differentiation rules:
@@ -346,7 +346,7 @@ and multiplication rules mirror differentiation rules:
 
 $$ \texttt{Property 1.} f(a + b \epsilon) = f(a) + f^\prime(a) b \epsilon$$
 
-\noindent then the chain rule works as expected on the dual number represention, which
+\noindent then the chain rule works as expected on the dual number representation, which
 can be seen by applying the property twice:
 
 $$ f(g(v + \dot{v}\epsilon)) + f(g(v) + g^\prime(v) \dot{v} \epsilon) =
@@ -354,7 +354,7 @@ f(g(v)) + f^\prime(g(v))g^\prime(v) \dot{v} \epsilon $$
 
 \noindent The coefficient on the right-hand side is exactly the derivative of the
 composition of $f$ and $g$. 
-This means that we can extract the derivative of a function by interpretting
+This means that we can extract the derivative of a function by interpreting
 any non-dual number $v$ as $(v + 0 \epsilon)$ and evaluating the function
 in this non-standard way on an initial input with a coefficient of $1$ for $\epsilon$:
 
@@ -368,7 +368,7 @@ Note that these tools require source code transformation or operator overloading
 
 \subsection{Reverse Mode AD}
 
-\noindent Reverse AD propogates derivatives backward from a given output. This
+\noindent Reverse AD propagates derivatives backward from a given output. This
 is done by complementing each intermediate variable $v_i$ with an adjoint
 
 $$ \bar{v_i} = \frac{\partial y_j}{\partial v_i} $$
@@ -377,7 +377,7 @@ $$ \bar{v_i} = \frac{\partial y_j}{\partial v_i} $$
 to changes in $v_i$. Derivatives are computed in the second phase of a two-phase process.
 In the first phase, the original code is run \textit{forward}, populating intermediate
 variables $v_i$ and recording the dependencies in the computational graph through
-book-keeping. In the second phase, derivatives are calculated by propogating adjoints
+book-keeping. In the second phase, derivatives are calculated by propagating adjoints
 $\bar{v_i}$ in reverse, from outputs to inputs.\\
 
 \noindent Recall the example $y = f(x_1,x_2) = \ln(x_1) + x_1 x_2 - \sin(x_2)$.
@@ -421,7 +421,7 @@ forward mode required. Because machine learning is focused on the
 gradient of scalar-valued objectives with respect to large numbers of
 parameters, this establishes the reverse mode as the mainstay technique.
 
-\noindent Similar to matrix-free comptuation of JVP's wit hforward mode, reverse
+\noindent Similar to matrix-free computation of JVP's with forward mode, reverse
 mode can be used for computing the transposed Jacobian-vector product
 $\v{J}_f^\top \v{r}$ by initializing the reverse phase with $\bar{\v{y}}=\v{r}$.
 
@@ -451,7 +451,7 @@ recovers the classical gradient descent algorithm, which uses
 updates of the form $\Delta \v{w} = - \eta \nabla_{\v{w}} f$
 where $\eta > 0$ is a step size. 
 
-\section{Bayesian Probabilstic Modeling and Inference}
+\section{Bayesian Probabilistic Modeling and Inference}
 
 When introducing new models, machine learning researchers have spent considerable
 effort on manual derivation of analytical derivatives to be used with
@@ -511,12 +511,12 @@ optimization algorithms (error prone and time consuming)
     \item Robert E. Wengert. A simple automatic derivative evaluation program. 
     Communications of the ACM, 7:463–4, 1964.
 
-    \item Andreas Griewank and Andrea Walther. Evaluating Derivatives: Principles and Techniques
-of Algorithmic Differentiation. Society for Industrial and Applied Mathematics, Philadelphia, 2008. doi: 10.1137/1.9780898717761.
+    \item Andreas Griewank and Andrea Walther. Evaluating Derivatives: 
+    Principles and Techniques of Algorithmic Differentiation. Society for 
+    Industrial and Applied Mathematics, Philadelphia, 2008. doi: 10.1137/1.9780898717761.
 
     \item Mathoma (YouTube user). Dual Numbers Introduction. 2016.
     https://www.youtube.com/watch?v=63dt-pSKlk0 
-
 
 \end{itemize}
 
