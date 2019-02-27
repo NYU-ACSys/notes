@@ -291,7 +291,8 @@ assume $\dot{x}$ has no particular meaning and is just some number. Then
 \noindent If you set $\dot{x}$ to $1$, then the coefficient of $\epsilon$ is
 the derivative of $P$ evaluated at $x$. More generally,
 $f(a + b \epsilon) = f(a) + f^\prime(a) b \epsilon$ 
-($b$ doesn't have to be $1$). Similarly, one may derive
+($b$ doesn't have to be $1$). We now know that this holds for polynomials.
+Similarly, one may derive
 
 \begin{align*}
     \sin(x + \dot{x} \epsilon) &= \sin(x) + \cos(x) \dot{x} \epsilon\\
@@ -303,13 +304,14 @@ $f(a + b \epsilon) = f(a) + f^\prime(a) b \epsilon$
 
 
 \noindent This can be extended to functions of many variables
-by introducing more dual components. For example, $f(x_1,x_2) = x_1 x_2 \sin x_1$
+by introducing more dual components. For example, $f(x_1,x_2) = x_1 x_2 + \sin x_1$
 extends to 
 $$f(x_1 + \dot{x_1} \epsilon_1, x_2 + \dot{x_2} \epsilon_2) = 
 (x_1 + \dot{x_1}\epsilon_1)(x_2 + \dot{x_2}\epsilon_2) + \sin(x_1 + \dot{x_1}\epsilon_1) =
 x_1 x_2 + (x_2 + \cos(x_1))\dot{x_1}\epsilon_1 + x_1 \dot{x_2} \epsilon_2 $$
 \noindent where the coefficients of $\epsilon_i$ are the partial derivatives with respect
-to $x_i$.
+to $x_i$ when $\dot{x_i}=1$. We now know that the derivative property holds
+for many functions.
 
 \newpage
 
@@ -467,7 +469,7 @@ grow in proportion to the number of operations in the function to be differentia
 \noindent Given an objective (loss) function $f(\v{w}): \b{R}^n \rightarrow \b{R}$
 that one would like to minimize with respect to variable $\v{w}$,
 one searches for (local) minimum $\v{w}^\star = \argmin_{\v{w}} f(\v{w})$ 
-using a iterative steepest descent method. This is because usually
+using an iterative steepest descent method. This is because usually
 $f$ is complicated enough that one cannot simply set $\nabla f_{\v{w}} = 0$ and solve
 for $\v{w}$, a method used to analytically find minima/maxima.\\
 
@@ -506,9 +508,12 @@ applying something like gradient descent:
 \noindent Actually, most practitioners and many researchers 
 of machine learning exclusively use (and only know about) gradient descent,
 and don't know that there are more general steepest descent methods 
-(corresponding to different choices of norms) are better for optimizing certain kinds 
-of problems (because those methods update the variables differently from just
-taking a step in the negative gradient direction. Rajesh has a paper on this.\\
+(corresponding to different choices of norms). These alternatives are
+better for optimizing certain kinds of problems, because those methods update the 
+variables differently from just taking a step in the negative gradient direction. 
+Rajesh has a paper on this. However, even when one knows about these alternatives,
+they are hard to implement and experiment with because the setup described above is 
+really intended for Eucidean-norm gradient descent.\\
 
 \noindent One interesting research direction is how to make an auto-differentiation
 + optimization system that doesn't need separate implementations of descent
